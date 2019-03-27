@@ -29,3 +29,8 @@ import org.slf4j.LoggerFactory
  * ```
  **/
 inline fun <reified T> getLogger(): Logger = LoggerFactory.getLogger(T::class.java.name)
+
+fun getLogger(name: String): Logger = LoggerFactory.getLogger(name)
+
+fun <T> getLogger(clazz: Class<T>): Logger = LoggerFactory.getLogger(clazz.name)
+

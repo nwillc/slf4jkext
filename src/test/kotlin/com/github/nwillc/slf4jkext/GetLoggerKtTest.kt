@@ -25,10 +25,26 @@ import org.slf4j.Logger
 
 class GetLoggerKtTest {
     @Test
-    fun `return an appropriate logger`() {
+    fun `return an appropriate logger from reified type`() {
         val logger = getLogger<GetLoggerKtTest>()
 
         assertThat(logger).isInstanceOf(Logger::class.java)
         assertThat(logger.name!!).isEqualTo(GetLoggerKtTest::class.java.name)
+    }
+
+    @Test
+    fun `return an appropriate logger from name`() {
+        val logger = getLogger("foo")
+
+        assertThat(logger).isInstanceOf(Logger::class.java)
+        assertThat(logger.name!!).isEqualTo("foo")
+    }
+
+    @Test
+    fun `return an appropriate logger from class`() {
+        val logger = getLogger(String::class.java)
+
+        assertThat(logger).isInstanceOf(Logger::class.java)
+        assertThat(logger.name!!).isEqualTo(String::class.java.name)
     }
 }
