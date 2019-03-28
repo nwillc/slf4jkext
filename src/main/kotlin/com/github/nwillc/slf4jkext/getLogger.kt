@@ -30,7 +30,21 @@ import org.slf4j.LoggerFactory
  **/
 inline fun <reified T> getLogger(): Logger = LoggerFactory.getLogger(T::class.java.name)
 
+/**
+ *
+ * A function returning the SLF4J Logger for the specified name:
+ * ```
+ *    val logger = getLogger("foo")
+ * ```
+ **/
 fun getLogger(name: String): Logger = LoggerFactory.getLogger(name)
 
+/**
+ *
+ * A function returning the SLF4J Logger for the specified class:
+ * ```
+ *    val logger = getLogger(String::class.java)
+ * ```
+ **/
 fun <T> getLogger(clazz: Class<T>): Logger = LoggerFactory.getLogger(clazz.name)
 
