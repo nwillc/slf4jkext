@@ -4,3 +4,7 @@
 ---
 # slf4jkext
 One liner Kotlin extension functions to simplify SLF4J use.
+
+## See Also
+
+- [API Docs](https://nwillc.github.io/slf4jkext/dokka/slf4jkext)
