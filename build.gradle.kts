@@ -1,6 +1,7 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.dokka.gradle.DokkaTask
 
 val publicationName = "maven"
 
@@ -14,6 +15,7 @@ plugins {
     `maven-publish`
     kotlin("jvm") version "1.3.21"
     id("com.jfrog.bintray") version "1.8.4"
+    id("org.jetbrains.dokka") version "0.9.18"
 }
 
 group = "com.github.nwillc"
@@ -39,6 +41,12 @@ val sourcesJar by tasks.registering(Jar::class) {
     from(sourceSets["main"].allSource)
 }
 
+val javadocJar by tasks.registering(Jar::class) {
+    dependsOn("dokka")
+    classifier = "javadoc"
+    from("$buildDir/javadoc")
+}
+
 publishing {
     publications {
         create<MavenPublication>(publicationName) {
@@ -48,6 +56,7 @@ publishing {
 
             from(components["java"])
             artifact(sourcesJar.get())
+            artifact(javadocJar.get())
         }
     }
 }
@@ -85,6 +94,11 @@ tasks {
     }
     withType<GenerateMavenPom> {
         destination = file("$buildDir/libs/${project.name}-${project.version}.pom")
+    }
+    withType<DokkaTask> {
+        outputFormat = "html"
+        includeNonPublic = false
+        outputDirectory = "$buildDir/dokka"
     }
     withType<BintrayUploadTask> {
         onlyIf {
