@@ -6,6 +6,13 @@
 # slf4jkext
 One liner Kotlin extension functions to simplify SLF4J use.
 
+```kotlin
+// Use any of these ways...
+val logger1 = getLogger<SomeClass>()
+val logger2 = getLogger("name")
+val logger3 = getLogger(SomeClass::class.java)
+```
+
 ## See Also
 
 - [API Docs](https://nwillc.github.io/slf4jkext/dokka/slf4jkext)
