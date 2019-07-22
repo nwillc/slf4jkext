@@ -13,10 +13,10 @@ val tinylogImplVersion: String by project
 plugins {
     maven
     `maven-publish`
-    kotlin("jvm") version "1.3.40"
+    kotlin("jvm") version "1.3.41"
     id("com.jfrog.bintray") version "1.8.4"
     id("org.jetbrains.dokka") version "0.9.18"
-    id("com.github.nwillc.vplugin") version "2.3.0"
+    id("com.github.nwillc.vplugin") version "3.0.1"
 }
 
 group = "com.github.nwillc"
