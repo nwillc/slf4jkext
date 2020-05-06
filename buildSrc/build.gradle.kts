@@ -15,5 +15,10 @@
  *
  */
 
-rootProject.name = 'slf4jkext'
+plugins {
+    `kotlin-dsl`
+}
 
+repositories {
+    jcenter()
+}

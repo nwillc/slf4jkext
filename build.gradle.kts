@@ -1,22 +1,29 @@
+/*
+ * Copyright (c) 2020, nwillc@gmail.com
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ */
+
 import com.jfrog.bintray.gradle.BintrayExtension
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.dokka.gradle.DokkaTask
-
-val publicationName = "maven"
-
-val assertJVersion: String by project
-val jupiterVersion: String by project
-val slf4jApiVersion: String by project
-val tinylogImplVersion: String by project
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     maven
     `maven-publish`
-    kotlin("jvm") version "1.3.41"
-    id("com.jfrog.bintray") version "1.8.4"
-    id("org.jetbrains.dokka") version "0.9.18"
-    id("com.github.nwillc.vplugin") version "3.0.1"
+    Dependencies.plugins.forEach { (n, v) -> id(n) version v }
 }
 
 group = "com.github.nwillc"
@@ -27,30 +34,35 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("org.slf4j:slf4j-api:$slf4jApiVersion")
+    Dependencies.artifacts(
+        "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+        "org.slf4j:slf4j-api"
+    ) { implementation(it) }
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion")
-    testImplementation("org.assertj:assertj-core:$assertJVersion")
+    Dependencies.artifacts(
+        "org.junit.jupiter:junit-jupiter",
+        "org.assertj:assertj-core"
+    ) { testImplementation(it) }
 
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
-    testRuntime("org.tinylog:slf4j-binding:$tinylogImplVersion")
+    Dependencies.artifacts(
+        "org.tinylog:slf4j-binding"
+    ) { testRuntimeOnly(it) }
 }
 
 val sourcesJar by tasks.registering(Jar::class) {
-    classifier = "sources"
-    from(sourceSets["main"].allSource)
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
 }
 
 val javadocJar by tasks.registering(Jar::class) {
     dependsOn("dokka")
-    classifier = "javadoc"
-    from("$buildDir/javadoc")
+    archiveClassifier.set("javadoc")
+    from("$projectDir/${Constants.dokkaDir}")
 }
 
 publishing {
     publications {
-        create<MavenPublication>(publicationName) {
+        create<MavenPublication>(Constants.publicationName) {
             groupId = project.group.toString()
             artifactId = project.name
             version = project.version.toString()
@@ -67,9 +79,9 @@ bintray {
     key = System.getenv("BINTRAY_API_KEY")
     dryRun = false
     publish = true
-    setPublications(publicationName)
+    setPublications(Constants.publicationName)
     pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
-        repo = publicationName
+        repo = Constants.publicationName
         name = project.name
         desc = "Kotlin extension functions for SLF4J API."
         websiteUrl = "https://github.com/nwillc/slf4jkext"
@@ -84,22 +96,21 @@ bintray {
 
 tasks {
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     withType<Test> {
         useJUnitPlatform()
-        testLogging.showStandardStreams = true
+        testLogging {
+            showStandardStreams = true
+            events("passed", "failed", "skipped")
+        }
     }
     named<Jar>("jar") {
         manifest.attributes["Automatic-Module-Name"] = "${project.group}.${project.name}"
     }
-    withType<GenerateMavenPom> {
-        destination = file("$buildDir/libs/${project.name}-${project.version}.pom")
-    }
     withType<DokkaTask> {
         outputFormat = "html"
-        includeNonPublic = false
-        outputDirectory = "$buildDir/dokka"
+        outputDirectory = "$projectDir/${Constants.dokkaDir}"
     }
     withType<BintrayUploadTask> {
         onlyIf {
@@ -110,5 +121,18 @@ tasks {
                 true
             }
         }
+    }
+}
+
+ktlint {
+    version.set(ToolVersions.ktlint)
+    disabledRules.set(setOf("import-ordering"))
+}
+
+detekt {
+    toolVersion = PluginVersions.detekt
+    reports {
+        html.enabled = true
+        txt.enabled = true
     }
 }
