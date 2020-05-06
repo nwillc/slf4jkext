@@ -27,7 +27,7 @@ plugins {
 }
 
 group = "com.github.nwillc"
-version = "1.1.2-SNAPSHOT"
+version = "1.1.2"
 
 repositories {
     jcenter()
