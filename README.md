@@ -1,6 +1,5 @@
-
-[![Build Status](https://github.com/nwillc/slf4jkext/workflows/CICD/badge.svg)](https://github.com/nwillc/slf4jkext/actions?query=workflow%3ACICD)
 [![license](https://img.shields.io/github/license/nwillc/slf4jkext.svg)](https://tldrlegal.com/license/-isc-license)
+[![Build Status](https://github.com/nwillc/slf4jkext/workflows/CICD/badge.svg)](https://github.com/nwillc/slf4jkext/actions?query=workflow%3ACICD)
 [![Download](https://api.bintray.com/packages/nwillc/maven/slf4jkext/images/download.svg)](https://bintray.com/nwillc/maven/slf4jkext/_latestVersion)
 ---
 # slf4jkext
